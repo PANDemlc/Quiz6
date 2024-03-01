@@ -1,13 +1,18 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-# Add New Activity Types
+# Separate interfaces 'Observer' and 'Monitor' for different class structures
+    # ISP compliant
+
+# Allowes for Addition of New Activity Types easily without changing classes - OCP compliant 
 # Observer tells other classes to 'notify' when collecting new data
 class Observer(ABC):
     @abstractmethod
     def notify(self, data):
         raise NotImplementedError("Implement function!")
-    
+
+# Used to change list of observers and notify of changes made
+    # LSP compliant
 class Monitor(ABC):
     @abstractmethod
     def attach(self, observer):
@@ -20,6 +25,7 @@ class Monitor(ABC):
         raise NotImplementedError("Implement function!")
 
 # Separate classes for User, Activity, ActivityMonitor, DataStorage, and Display to follow SRP
+    # - Separate classes focued on a specific responsibility
 class User:
     def __init__(self, name, age, weight):
         self.name = name
@@ -39,6 +45,7 @@ class Display(Observer):
         for item, value in data.items():
             print(f"{item}: {value} ")
 
+# Separate from DataStorage for DIP compliance
 class ActivityMonitor(Monitor):
     def __init__(self):
         self.observers: List[Observer] = []
@@ -59,6 +66,8 @@ class ActivityMonitor(Monitor):
         self.data_storage.add_data(user, activity)
         self.notify_change()
     
+# Low level and high level concepts are not mixed for easy testing.
+    # Can switch between DataStorage without effecting high level logic - DIP compliant
 class DataStorage:
     def __init__(self):
         self.data = {}
@@ -76,7 +85,7 @@ def main():
     monitor = ActivityMonitor()
     monitor.attach(Display())
 
-    # Add any new activity
+    # Add any new activity without changing classes
     running = Activity("Running", 10000, 10, 500)
     monitor.collect_data(bob, running)
 
